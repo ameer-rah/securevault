@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SecureVault</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header>
+    <div class="container">
+        <nav>
+            <div class="logo">SECUREVAULT</div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/login" class="active">Login</a>
+                <a href="/register">Register</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">SYSTEM ACCESS</h2>
+
+            <!-- Alert for error messages -->
+            <div th:if="${param.error}" class="alert alert-danger">
+                AUTHENTICATION FAILED. INVALID CREDENTIALS.
+                <span class="dismiss">&times;</span>
+            </div>
+
+            <!-- Alert for logout messages -->
+            <div th:if="${param.logout}" class="alert alert-success">
+                CONNECTION TERMINATED. SESSION CLOSED.
+                <span class="dismiss">&times;</span>
+            </div>
+
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label for="username">USER ID</label>
+                    <input type="text" id="username" name="username" class="form-control" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">MASTER KEY</label>
+                    <div style="position: relative;">
+                        <input type="password" id="password" name="password" class="form-control" required>
+                        <button type="button" class="password-toggle" data-target="#password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--accent-color);">SHOW</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="remember-me"> MAINTAIN CONNECTION
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">INITIATE SESSION</button>
+                </div>
+            </form>
+
+            <div class="form-footer">
+                <p>EMERGENCY KEY RECOVERY? <a href="/forgot-password">INITIATE RESET</a></p>
+                <p>NO ACCESS CREDENTIALS? <a href="/register">REGISTER NEW IDENTITY</a></p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 SecureVault. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Password visibility toggle
+        const toggleButtons = document.querySelectorAll('.password-toggle');
+
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const passwordField = document.querySelector(this.dataset.target);
+                if (passwordField) {
+                    if (passwordField.type === 'password') {
+                        passwordField.type = 'text';
+                        this.textContent = 'HIDE';
+                    } else {
+                        passwordField.type = 'password';
+                        this.textContent = 'SHOW';
+                    }
+                }
+            });
+        });
+
+        // Alert dismissal
+        const alerts = document.querySelectorAll('.alert');
+
+        alerts.forEach(alert => {
+            const dismissButton = alert.querySelector('.dismiss');
+
+            if (dismissButton) {
+                dismissButton.addEventListener('click', function() {
+                    alert.style.display = 'none';
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

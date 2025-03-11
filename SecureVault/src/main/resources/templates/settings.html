@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - SecureVault</title>
+    <style>
+        /* Base styles */
+        :root {
+            --primary-color: #00ff00;
+            --secondary-color: #0a0a0a;
+            --text-color: #f0f0f0;
+            --accent-color: #ff00ff;
+            --danger-color: #ff3333;
+            --success-color: #00cc00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        body {
+            background-color: #121212;
+            color: var(--text-color);
+            position: relative;
+            overflow-x: hidden;
+            cursor: none !important;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Custom cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.15s ease, border-color 0.3s ease;
+            display: block;
+        }
+
+        /* Scanner effect */
+        .scanner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: linear-gradient(90deg,
+            rgba(0,255,0,0) 0%,
+            rgba(0,255,0,0.5) 50%,
+            rgba(0,255,0,0) 100%);
+            opacity: 0.8;
+            z-index: 1000;
+            box-shadow: 0 0 15px var(--primary-color);
+            animation: scan 3s linear infinite;
+            pointer-events: none;
+            width: 100%;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+            100% {
+                top: 100%;
+            }
+        }
+
+        /* Navigation */
+        header {
+            background-color: rgba(10, 10, 10, 0.8);
+            border-bottom: 1px solid var(--primary-color);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* Main content */
+        main {
+            padding: 30px 0 80px; /* Added bottom padding to account for fixed footer */
+            min-height: calc(100vh - 180px);
+        }
+
+        /* Alert messages */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .alert-success {
+            background-color: rgba(0, 204, 0, 0.2);
+            border: 1px solid var(--success-color);
+        }
+
+        .alert-danger {
+            background-color: rgba(255, 51, 51, 0.2);
+            border: 1px solid var(--danger-color);
+        }
+
+        .dismiss {
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        /* Settings layout */
+        .settings-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .settings-sidebar {
+            width: 250px;
+            background-color: rgba(20, 20, 20, 0.7);
+            border: 1px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+        }
+
+        .settings-sidebar h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+        }
+
+        .settings-sidebar ul {
+            list-style: none;
+        }
+
+        .settings-sidebar li {
+            margin-bottom: 10px;
+        }
+
+        .settings-sidebar a {
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            padding: 8px 10px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .settings-sidebar a:hover, .settings-sidebar a.active {
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            background-color: rgba(0, 255, 0, 0.1);
+        }
+
+        .settings-content {
+            flex: 1;
+            background-color: rgba(20, 20, 20, 0.7);
+            border: 1px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+        }
+
+        .settings-content h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        /* Form controls */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(20, 20, 20, 0.7);
+            border: 1px solid var(--primary-color);
+            color: var(--text-color);
+            margin-top: 5px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        /* Button styles */
+        .btn {
+            padding: 8px 15px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 15px var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: var(--primary-color);
+        }
+
+        /* Toggle switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: var(--text-color);
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+            background-color: var(--primary-color);
+        }
+
+        /* Settings section styles */
+        .settings-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .settings-section:last-child {
+            border-bottom: none;
+        }
+
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .settings-label {
+            flex: 1;
+        }
+
+        .settings-control {
+            width: 200px;
+            text-align: right;
+        }
+
+        /* Footer */
+        footer {
+            background-color: rgba(10, 10, 10, 0.8);
+            border-top: 1px solid var(--primary-color);
+            padding: 15px 0;
+            text-align: center;
+            font-size: 14px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            left: 0;
+        }
+
+        /* Static effect */
+        .static-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 50;
+            border-radius: 50%;
+            animation: fadeOut 0.2s linear;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 0.5; }
+            100% { opacity: 0; }
+        }
+
+        /* Hover effect */
+        .hoverable {
+            position: relative;
+            cursor: none;
+        }
+
+        .hoverable::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 255, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .hoverable:hover::before {
+            opacity: 1;
+        }
+
+        /* Digital glitch effect on hover */
+        .logo:hover, .btn-primary:hover {
+            animation: glitch 0.3s infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                text-shadow: 2px 0 0 rgba(255, 0, 255, 0.7), -2px 0 0 rgba(0, 255, 255, 0.7);
+            }
+            25% {
+                text-shadow: -2px 0 0 rgba(255, 0, 255, 0.7), 2px 0 0 rgba(0, 255, 255, 0.7);
+            }
+            50% {
+                text-shadow: 2px 4px 0 rgba(255, 0, 255, 0.7), -2px -4px 0 rgba(0, 255, 255, 0.7);
+            }
+            75% {
+                text-shadow: -2px -4px 0 rgba(255, 0, 255, 0.7), 2px 4px 0 rgba(0, 255, 255, 0.7);
+            }
+            100% {
+                text-shadow: 2px 0 0 rgba(255, 0, 255, 0.7), -2px 0 0 rgba(0, 255, 255, 0.7);
+            }
+        }
+
+        /* Terminal typing effect for section title */
+        .terminal-text {
+            overflow: hidden;
+            border-right: 2px solid var(--primary-color);
+            white-space: nowrap;
+            margin: 0;
+            animation: typing 3s steps(30, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--primary-color) }
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .settings-container {
+                flex-direction: column;
+            }
+
+            .settings-sidebar {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Scanner line animation -->
+<div class="scanner"></div>
+
+<!-- Custom cursor -->
+<div class="custom-cursor"></div>
+
+<header>
+    <div class="container">
+        <nav>
+            <div class="logo hoverable">SECUREVAULT</div>
+            <div class="nav-links">
+                <a href="dashboard.html" class="hoverable" id="dashboardLink">DASHBOARD</a>
+                <a href="#" class="hoverable active" id="settingsLink">SETTINGS</a>
+                <a href="index.html" class="hoverable" id="terminateLink">TERMINATE</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+        <!-- Success message -->
+        <div id="successAlert" class="alert alert-success" style="display: none">
+            <span id="successMessage"></span>
+            <span class="dismiss">×</span>
+        </div>
+
+        <!-- Error message -->
+        <div id="errorAlert" class="alert alert-danger" style="display: none">
+            <span id="errorMessage"></span>
+            <span class="dismiss">×</span>
+        </div>
+
+        <!-- Settings content -->
+        <div class="settings-container">
+            <!-- Sidebar -->
+            <div class="settings-sidebar">
+                <h3>SETTINGS</h3>
+                <ul>
+                    <li><a href="#general" class="hoverable tab-link active">GENERAL</a></li>
+                    <li><a href="#security" class="hoverable tab-link">SECURITY</a></li>
+                    <li><a href="#appearance" class="hoverable tab-link">APPEARANCE</a></li>
+                    <li><a href="#export" class="hoverable tab-link">IMPORT/EXPORT</a></li>
+                    <li><a href="#account" class="hoverable tab-link">ACCOUNT</a></li>
+                </ul>
+            </div>
+
+            <!-- Content Area -->
+            <div class="settings-content">
+                <h2 class="terminal-text">SYSTEM SETTINGS</h2>
+
+                <div id="general" class="settings-section">
+                    <h3>GENERAL CONFIGURATION</h3>
+
+                    <div class="settings-row">
+                        <div class="settings-label">DEFAULT CATEGORY</div>
+                        <div class="settings-control">
+                            <select id="defaultCategory" class="form-control hoverable">
+                                <option value="all">ALL RECORDS</option>
+                                <option value="1">SOCIAL MEDIA</option>
+                                <option value="2">FINANCIAL</option>
+                                <option value="3">EMAIL</option>
+                                <option value="4">WORK</option>
+                                <option value="5">SHOPPING</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-label">AUTO-LOGOUT AFTER INACTIVITY</div>
+                        <div class="settings-control">
+                            <select id="autoLogout" class="form-control hoverable">
+                                <option value="5">5 MINUTES</option>
+                                <option value="10">10 MINUTES</option>
+                                <option value="15">15 MINUTES</option>
+                                <option value="30">30 MINUTES</option>
+                                <option value="60">60 MINUTES</option>
+                                <option value="0">NEVER</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="security" class="settings-section">
+                    <h3>SECURITY SETTINGS</h3>
+
+                    <div class="settings-row">
+                        <div class="settings-label">ENABLE TWO-FACTOR AUTHENTICATION</div>
+                        <div class="settings-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="twoFactorAuth">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-label">PASSWORD GENERATOR LENGTH</div>
+                        <div class="settings-control">
+                            <input type="number" id="passwordLength" class="form-control hoverable" min="8" max="64" value="16">
+                        </div>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-label">INCLUDE SPECIAL CHARACTERS</div>
+                        <div class="settings-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="specialChars" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-label">INCLUDE NUMBERS</div>
+                        <div class="settings-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="includeNumbers" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="appearance" class="settings-section">
+                    <h3>APPEARANCE</h3>
+
+                    <div class="settings-row">
+                        <div class="settings-label">ENABLE SCANNER EFFECT</div>
+                        <div class="settings-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="scannerEffect" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-label">ENABLE STATIC PARTICLES</div>
+                        <div class="settings-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="staticParticles" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-label">CUSTOM CURSOR</div>
+                        <div class="settings-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="customCursor" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="export" class="settings-section">
+                    <h3>IMPORT/EXPORT</h3>
+
+                    <div class="settings-row">
+                        <div class="settings-label">EXPORT ALL RECORDS</div>
+                        <div class="settings-control">
+                            <button id="exportBtn" class="btn hoverable">EXPORT</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-label">IMPORT RECORDS</div>
+                        <div class="settings-control">
+                            <button id="importBtn" class="btn hoverable">IMPORT</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label for="importFile">IMPORT FILE</label>
+                        <input type="file" id="importFile" class="form-control hoverable" accept=".json">
+                    </div>
+                </div>
+
+                <div id="account" class="settings-section">
+                    <h3>ACCOUNT SETTINGS</h3>
+
+                    <div class="form-group">
+                        <label for="username">USERNAME</label>
+                        <input type="text" id="username" class="form-control hoverable" value="admin" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">EMAIL</label>
+                        <input type="email" id="email" class="form-control hoverable" value="admin@securevault.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="currentPassword">CURRENT PASSWORD</label>
+                        <input type="password" id="currentPassword" class="form-control hoverable">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPassword">NEW PASSWORD</label>
+                        <input type="password" id="newPassword" class="form-control hoverable">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">CONFIRM NEW PASSWORD</label>
+                        <input type="password" id="confirmPassword" class="form-control hoverable">
+                    </div>
+
+                    <div style="text-align: right; margin-top: 20px;">
+                        <button id="saveAccountBtn" class="btn btn-primary hoverable">SAVE CHANGES</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 SecureVault. All rights reserved.</p>
+    </div>
+</footer>
+<script>
+
+</script>

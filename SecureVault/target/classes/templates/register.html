@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - SecureVault</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header>
+    <div class="container">
+        <nav>
+            <div class="logo">
+                <h1>SecureVault</h1>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/login">Login</a>
+                <a href="/register" class="active">Register</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">Create Your Account</h2>
+
+            <!-- Alert for error messages -->
+            <div th:if="${error}" class="alert alert-danger">
+                <p th:text="${error}"></p>
+                <span class="dismiss">&times;</span>
+            </div>
+
+            <form th:action="@{/register}" method="post" data-validate="true">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" required autofocus th:value="${username}">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" required th:value="${email}">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Master Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="password" name="password" class="form-control" required>
+                        <button type="button" class="password-toggle" data-target="#password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">Show</button>
+                    </div>
+
+                    <!-- Password strength meter -->
+                    <div class="password-strength weak">
+                        <div class="strength-meter">
+                            <div class="strength-meter-fill"></div>
+                        </div>
+                        <span>Weak</span>
+                    </div>
+
+                    <button type="button" class="generate-password" data-target="#password" data-length="16" style="margin-top: 5px;">Generate Strong Password</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+                        <button type="button" class="password-toggle" data-target="#confirmPassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">Show</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="passwordHint">Password Hint (Optional)</label>
+                    <input type="text" id="passwordHint" name="passwordHint" class="form-control" th:value="${passwordHint}">
+                    <small>This will help you remember your master password. Do not make it too obvious.</small>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="terms" required> I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+                </div>
+            </form>
+
+            <div class="form-footer">
+                <p>Already have an account? <a href="/login">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 SecureVault. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SecureVault</title>
+    <style>
+        /* Base styles */
+        :root {
+            --primary-color: #00ff00;
+            --secondary-color: #0a0a0a;
+            --text-color: #f0f0f0;
+            --accent-color: #ff00ff;
+            --danger-color: #ff3333;
+            --success-color: #00cc00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        body {
+            background-color: #121212;
+            color: var(--text-color);
+            position: relative;
+            overflow-x: hidden;
+            cursor: none !important;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Custom cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.15s ease, border-color 0.3s ease;
+        }
+
+        /* Scanner effect */
+        .scanner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: linear-gradient(90deg,
+            rgba(0,255,0,0) 0%,
+            rgba(0,255,0,0.5) 50%,
+            rgba(0,255,0,0) 100%);
+            opacity: 0.8;
+            z-index: 1000;
+            box-shadow: 0 0 15px var(--primary-color);
+            animation: scan 3s linear infinite;
+            pointer-events: none;
+            width: 100%;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+            100% {
+                top: 100%;
+            }
+        }
+
+        /* Navigation */
+        header {
+            background-color: rgba(10, 10, 10, 0.8);
+            border-bottom: 1px solid var(--primary-color);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* Main content */
+        main {
+            padding: 30px 0 80px; /* Added bottom padding to account for fixed footer */
+            min-height: calc(100vh - 180px);
+        }
+
+        /* Alert messages */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .alert-success {
+            background-color: rgba(0, 204, 0, 0.2);
+            border: 1px solid var(--success-color);
+        }
+
+        .alert-danger {
+            background-color: rgba(255, 51, 51, 0.2);
+            border: 1px solid var(--danger-color);
+        }
+
+        .dismiss {
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        /* Dashboard layout */
+        .dashboard-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: rgba(20, 20, 20, 0.7);
+            border: 1px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+        }
+
+        .sidebar h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar a {
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            padding: 8px 10px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            background-color: rgba(0, 255, 0, 0.1);
+        }
+
+        .content-area {
+            flex: 1;
+        }
+
+        /* Button styles */
+        .btn {
+            padding: 8px 15px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 15px var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: var(--primary-color);
+        }
+
+        .btn-view, .btn-edit, .btn-delete {
+            padding: 5px 10px;
+            margin-right: 5px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .btn-view:hover {
+            box-shadow: 0 0 10px #00ffff;
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+
+        .btn-edit:hover {
+            box-shadow: 0 0 10px #ffff00;
+            border-color: #ffff00;
+            color: #ffff00;
+        }
+
+        .btn-delete:hover {
+            box-shadow: 0 0 10px var(--danger-color);
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        /* Form controls */
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(20, 20, 20, 0.7);
+            border: 1px solid var(--primary-color);
+            color: var(--text-color);
+            margin-top: 5px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        /* Password list table */
+        .password-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .password-list th, .password-list td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .password-list th {
+            background-color: rgba(0, 255, 0, 0.1);
+            color: var(--primary-color);
+        }
+
+        .password-list tr:hover {
+            background-color: rgba(0, 255, 0, 0.05);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #1a1a1a;
+            margin: 100px auto;
+            padding: 0;
+            width: 60%;
+            max-width: 600px;
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 0 30px var(--primary-color);
+            animation: modalAppear 0.3s ease-out;
+        }
+
+        @keyframes modalAppear {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 15px;
+            background-color: rgba(0, 255, 0, 0.1);
+            border-bottom: 1px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            color: var(--primary-color);
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .modal-close {
+            color: var(--text-color);
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            padding: 0 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .modal-footer {
+            padding: 15px;
+            text-align: right;
+            border-top: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background-color: rgba(10, 10, 10, 0.8);
+            border-top: 1px solid var(--primary-color);
+            padding: 15px 0;
+            text-align: center;
+            font-size: 14px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            left: 0;
+        }
+
+        /* Static effect */
+        .static-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 50;
+            border-radius: 50%;
+            animation: fadeOut 0.2s linear;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 0.5; }
+            100% { opacity: 0; }
+        }
+
+        /* Hover effect */
+        .hoverable {
+            position: relative;
+            cursor: none;
+        }
+
+        .hoverable::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 255, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .hoverable:hover::before {
+            opacity: 1;
+        }
+
+        /* Digital glitch effect on hover */
+        .logo:hover, .btn-primary:hover {
+            animation: glitch 0.3s infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                text-shadow: 2px 0 0 rgba(255, 0, 255, 0.7), -2px 0 0 rgba(0, 255, 255, 0.7);
+            }
+            25% {
+                text-shadow: -2px 0 0 rgba(255, 0, 255, 0.7), 2px 0 0 rgba(0, 255, 255, 0.7);
+            }
+            50% {
+                text-shadow: 2px 4px 0 rgba(255, 0, 255, 0.7), -2px -4px 0 rgba(0, 255, 255, 0.7);
+            }
+            75% {
+                text-shadow: -2px -4px 0 rgba(255, 0, 255, 0.7), 2px 4px 0 rgba(0, 255, 255, 0.7);
+            }
+            100% {
+                text-shadow: 2px 0 0 rgba(255, 0, 255, 0.7), -2px 0 0 rgba(0, 255, 255, 0.7);
+            }
+        }
+
+        /* Terminal typing effect for dashboard title */
+        .terminal-text {
+            overflow: hidden;
+            border-right: 2px solid var(--primary-color);
+            white-space: nowrap;
+            margin: 0;
+            animation: typing 3s steps(30, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--primary-color) }
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .modal-content {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Scanner line animation -->
+<div class="scanner"></div>
+
+<!-- Custom cursor -->
+<div class="custom-cursor"></div>
+
+<header>
+    <div class="container">
+        <nav>
+            <div class="logo hoverable">SECUREVAULT</div>
+            <div class="nav-links">
+                <a href="/dashboard" class="hoverable active" id="dashboardLink">DASHBOARD</a>
+                <a href="settings.html" class="hoverable" id="settingsLink">SETTINGS</a>
+                <a href="#" class="hoverable" id="terminateLink">TERMINATE</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+        <!-- Success message -->
+        <div id="successAlert" class="alert alert-success" style="display: none">
+            <span id="successMessage"></span>
+            <span class="dismiss">×</span>
+        </div>
+
+        <!-- Error message -->
+        <div id="errorAlert" class="alert alert-danger" style="display: none">
+            <span id="errorMessage"></span>
+            <span class="dismiss">×</span>
+        </div>
+
+        <!-- Dashboard content -->
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h3>DATA CATEGORIES</h3>
+                <ul>
+                    <li><a href="/dashboard" class="hoverable">ALL RECORDS</a></li>
+                    <li><a href="/dashboard?category=1" class="hoverable">SOCIAL MEDIA</a></li>
+                    <li><a href="/dashboard?category=2" class="hoverable">FINANCIAL</a></li>
+                    <li><a href="/dashboard?category=3" class="hoverable">EMAIL</a></li>
+                    <li><a href="/dashboard?category=4" class="hoverable">WORK</a></li>
+                    <li><a href="/dashboard?category=5" class="hoverable">SHOPPING</a></li>
+                </ul>
+
+                <div style="margin-top: 20px;">
+                    <button id="addPasswordBtn" class="btn btn-primary hoverable" style="width: 100%;">ADD NEW RECORD</button>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 class="terminal-text">SECURE RECORDS</h2>
+
+                    <!-- Search bar -->
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="searchInput" placeholder="SEARCH DATABASE..." class="form-control hoverable">
+                        <button id="searchBtn" class="btn hoverable">SEARCH</button>
+                    </div>
+                </div>
+
+                <!-- Password list -->
+                <table class="password-list">
+                    <thead>
+                    <tr>
+                        <th>LOCATION</th>
+                        <th>USERNAME/EMAIL</th>
+                        <th>ACCESS KEY</th>
+                        <th>LAST MODIFIED</th>
+                        <th>OPERATIONS</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- If no passwords -->
+                    <tr th:if="${passwords == null || passwords.empty}">
+                        <td colspan="5" style="text-align: center; padding: 20px;">
+                            <p>NO RECORDS FOUND IN DATABASE.</p>
+                            <button id="emptyAddBtn" class="btn btn-primary hoverable" style="margin-top: 15px;">CREATE NEW RECORD</button>
+                        </td>
+                    </tr>
+
+                    <!-- Password entries -->
+                    <tr th:each="password : ${passwords}">
+                        <td th:text="${password.website}">google.com</td>
+                        <td th:text="${password.username}">example@gmail.com</td>
+                        <td>••••••••••••</td>
+                        <td th:text="${password.lastModified}">2025-03-11</td>
+                        <td>
+                            <button class="btn-view hoverable" th:attr="data-id=${password.id}">VIEW</button>
+                            <button class="btn-edit hoverable" th:attr="data-id=${password.id}">EDIT</button>
+                            <form th:action="@{/password/delete}" method="post" style="display: inline;">
+                                <input type="hidden" name="id" th:value="${password.id}" />
+                                <button type="submit" class="btn-delete hoverable">DELETE</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Modal for adding/editing passwords -->
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">NEW SECURE RECORD</h2>
+            <span id="closeModal" class="modal-close hoverable">×</span>
+        </div>
+
+        <form id="passwordForm" action="/password/save" method="post" onsubmit="return savePassword(event);">
+            <input type="hidden" id="passwordId" name="id">
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label for="website">LOCATION/SERVICE</label>
+                <input type="text" id="website" name="website" class="form-control hoverable" required placeholder="e.g., google.com">
+            </div>
+
+            <div class="form-group">
+                <label for="username">USERNAME/EMAIL</label>
+                <input type="text" id="username" name="username" class="form-control hoverable" required placeholder="e.g., your.email@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="passwordValue">ACCESS KEY</label>
+                <div style="position: relative;">
+                    <input type="password" id="passwordValue" name="password" class="form-control hoverable" required>
+                    <button type="button" id="passwordToggle" class="hoverable"
+                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #00ff00; cursor: pointer;">SHOW</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="category">CATEGORY</label>
+                <select id="category" name="category" class="form-control hoverable">
+                    <option value="1">SOCIAL MEDIA</option>
+                    <option value="2">FINANCIAL</option>
+                    <option value="3">EMAIL</option>
+                    <option value="4">WORK</option>
+                    <option value="5">SHOPPING</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">NOTES (OPTIONAL)</label>
+                <textarea id="notes" name="notes" class="form-control hoverable" rows="3"></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="cancelBtn" class="btn hoverable">CANCEL</button>
+                <button type="submit" class="btn btn-primary hoverable">STORE RECORD</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 SecureVault. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    // Custom cursor
+    const cursor = document.querySelector('.custom-cursor');
+    let isCursorVisible = true;
+
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+
+        // Make sure cursor is visible
+        if (!isCursorVisible) {
+            isCursorVisible = true;
+            cursor.style.display = 'block';
+        }
+    });
+
+    // Keep cursor visible when mouse enters window
+    document.addEventListener('mouseenter', () => {
+        isCursorVisible = true;
+        cursor.style.display = 'block';
+    });
+
+    // Ensure cursor remains visible even after page changes
+    setInterval(() => {
+        if (cursor.style.display !== 'block') {
+            cursor.style.display = 'block';
+        }
+    }, 100);
+
+    // Hover effects
+    const hoverables = document.querySelectorAll('.hoverable');
+    hoverables.forEach(hoverable => {
+        hoverable.addEventListener('mouseenter', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+            cursor.style.borderColor = '#00ff00';
+        });
+
+        hoverable.addEventListener('mouseleave', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+            cursor.style.borderColor = '#00ff00';
+        });
+    });
+
+    // Random static effect
+    function createStaticParticle() {
+        const particle = document.createElement('div');
+        particle.classList.add('static-particle');
+
+        const size = Math.random() * 3 + 1;
+        const posX = Math.random() * window.innerWidth;
+        const posY = Math.random() * window.innerHeight;
+
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.left = posX + 'px';
+        particle.style.top = posY + 'px';
+        particle.style.position = 'fixed';
+        particle.style.backgroundColor = '#00ff00';
+        particle.style.opacity = '0.5';
+        particle.style.zIndex = '50';
+
+        document.body.appendChild(particle);
+
+        setTimeout(() => {
+            particle.remove();
+        }, 200);
+    }
+
+    setInterval(() => {
+        createStaticParticle();
+    }, 100);
+
+    // Add password button
+    document.getElementById('addPasswordBtn').addEventListener('click', function() {
+        document.getElementById('passwordForm').reset();
+        document.getElementById('passwordId').value = '';
+        document.getElementById('modalTitle').textContent = 'NEW SECURE RECORD';
+        document.getElementById('passwordModal').style.display = 'block';
+    });
+
+    // Empty state add button
+    const emptyAddBtn = document.getElementById('emptyAddBtn');
+    if (emptyAddBtn) {
+        emptyAddBtn.addEventListener('click', function() {
+            document.getElementById('passwordForm').reset();
+            document.getElementById('passwordId').value = '';
+            document.getElementById('passwordModal').style.display = 'block';
+        });
+    }
+
+    // Close modal
+    document.getElementById('closeModal').addEventListener('click', function() {
+        document.getElementById('passwordModal').style.display = 'none';
+    });
+
+    // Cancel button
+    document.getElementById('cancelBtn').addEventListener('click', function() {
+        document.getElementById('passwordModal').style.display = 'none';
+    });
+
+    // Password toggle
+    document.getElementById('passwordToggle').addEventListener('click', function() {
+        const passwordField = document.getElementById('passwordValue');
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            this.textContent = 'HIDE';
+        } else {
+            passwordField.type = 'password';
+            this.textContent = 'SHOW';
+        }
+    });
+
+    // Edit buttons functionality (would typically fetch from server)
+    const editButtons = document.querySelectorAll('.btn-edit');
+    editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            // In a real app, you would fetch record data from the server
+            // For demo purposes, we're simulating with placeholder data
+            document.getElementById('passwordId').value = id;
+            document.getElementById('website').value = 'example.com';
+            document.getElementById('username').value = 'user@example.com';
+            document.getElementById('passwordValue').value = 'securepassword';
+            document.getElementById('category').value = '1';
+            document.getElementById('notes').value = 'Sample notes';
+            document.getElementById('modalTitle').textContent = 'EDIT SECURE RECORD';
+            document.getElementById('passwordModal').style.display = 'block';
+        });
+    });
+
+    // View buttons (simulate password viewing)
+    const viewButtons = document.querySelectorAll('.btn-view');
+    viewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // In a real app, this would reveal the password temporarily or perform some authenticated action
+            alert('ACCESS KEY REVEALED (in a real app, this would be secure)');
+        });
+    });
+
+    // Dismiss alerts
+    const dismissButtons = document.querySelectorAll('.dismiss');
+    dismissButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            this.parentNode.style.display = 'none';
+        });
+    });
+
+    // Handle password saving with authentication check
+    function savePassword(event) {
+        event.preventDefault();
+
+        // Show authentication error but still store the record
+        showErrorMessage('Error retrieving passwords: User not found');
+
+        // Continue to save the record anyway (for demonstration)
+
+        // If authenticated, handle the new record (simulating backend functionality)
+        const formData = new FormData(document.getElementById('passwordForm'));
+        const website = formData.get('website');
+        const username = formData.get('username');
+        const category = formData.get('category');
+
+        // Get record ID (for edit mode)
+        const recordId = document.getElementById('passwordId').value;
+        const isEditing = recordId !== '';
+
+        // Get all records
+        const allRecords = JSON.parse(localStorage.getItem('secureRecords') || '[]');
+
+        if (isEditing) {
+            // Update existing record
+            const recordIndex = allRecords.findIndex(r => r.id === recordId);
+            if (recordIndex !== -1) {
+                allRecords[recordIndex] = {
+                    ...allRecords[recordIndex],
+                    website: website,
+                    username: username,
+                    password: formData.get('password'),
+                    category: category,
+                    notes: formData.get('notes'),
+                    lastModified: new Date().toISOString().split('T')[0]
+                };
+            }
+        } else {
+            // Add new record
+            allRecords.push({
+                id: Date.now().toString(), // Generate unique ID
+                website: website,
+                username: username,
+                password: formData.get('password'),
+                category: category,
+                notes: formData.get('notes'),
+                lastModified: new Date().toISOString().split('T')[0]
+            });
+        }
+
+        // Store updated records
+        localStorage.setItem('secureRecords', JSON.stringify(allRecords));
+
+        // Close modal
+        document.getElementById('passwordModal').style.display = 'none';
+
+        // Refresh the displayed records based on current category
+        filterRecordsByCategory(window.currentCategory || 'all');
+
+        // Show success message
+        showSuccessMessage(`Record ${isEditing ? 'updated' : 'saved'} successfully`);
+
+        return false;
+    }
+
+    // Search functionality (simplified for demo)
+    document.getElementById('searchBtn').addEventListener('click', function() {
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('.password-list tbody tr');
+
+        rows.forEach(row => {
+            if (row.cells.length > 1) { // Skip empty state row
+                const location = row.cells[0].textContent.toLowerCase();
+                const identity = row.cells[1].textContent.toLowerCase();
+
+                if (location.includes(searchQuery) || identity.includes(searchQuery)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        });
+    });
+
+    // Utility functions for showing messages
+    function showSuccessMessage(message) {
+        const successAlert = document.getElementById('successAlert');
+        const successMessage = document.getElementById('successMessage');
+
+        successMessage.textContent = message;
+        successAlert.style.display = 'flex';
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            successAlert.style.display = 'none';
+        }, 5000);
+    }
+
+    function showErrorMessage(message) {
+        const errorAlert = document.getElementById('errorAlert');
+        const errorMessage = document.getElementById('errorMessage');
+
+        errorMessage.textContent = message;
+        errorAlert.style.display = 'flex';
+    }
+
+    // Load saved records from localStorage
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get saved category from localStorage or URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryFromUrl = urlParams.get('category');
+        window.currentCategory = localStorage.getItem('currentCategory') || (categoryFromUrl || 'all');
+
+        // Add click event listeners to category links
+        document.querySelectorAll('.sidebar ul li a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Remove active class from all links
+                document.querySelectorAll('.sidebar ul li a').forEach(a => {
+                    a.classList.remove('active');
+                });
+
+                // Add active class to clicked link
+                this.classList.add('active');
+
+                // Extract category from href
+                const href = this.getAttribute('href');
+                let categoryParam = 'all';
+
+                if (href.includes('?category=')) {
+                    categoryParam = href.split('?category=')[1];
+                }
+
+                // Update current category and save to localStorage
+                window.currentCategory = categoryParam;
+                localStorage.setItem('currentCategory', categoryParam);
+
+                // Update URL without refreshing page
+                const newUrl = window.location.pathname + (categoryParam !== 'all' ? `?category=${categoryParam}` : '');
+                window.history.pushState({}, '', newUrl);
+
+                // Filter records by category
+                filterRecordsByCategory(categoryParam);
+            });
+        });
+
+        // Set the active category in the sidebar
+        const activeCategory = window.currentCategory;
+        const activeCategoryLink = activeCategory === 'all' ?
+            document.querySelector('.sidebar ul li:first-child a') :
+            document.querySelector(`.sidebar ul li a[href*="?category=${activeCategory}"]`);
+
+        if (activeCategoryLink) {
+            document.querySelectorAll('.sidebar ul li a').forEach(a => a.classList.remove('active'));
+            activeCategoryLink.classList.add('active');
+        } else {
+            // Default to "ALL RECORDS" if no match found
+            document.querySelector('.sidebar ul li:first-child a').classList.add('active');
+        }
+
+        // Handle browser back/forward navigation
+        window.addEventListener('popstate', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryFromUrl = urlParams.get('category');
+            window.currentCategory = categoryFromUrl || 'all';
+
+            // Update active link
+            document.querySelectorAll('.sidebar ul li a').forEach(a => a.classList.remove('active'));
+            const activeLink = window.currentCategory === 'all' ?
+                document.querySelector('.sidebar ul li:first-child a') :
+                document.querySelector(`.sidebar ul li a[href*="?category=${window.currentCategory}"]`);
+
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+
+            // Filter records by the new category
+            filterRecordsByCategory(window.currentCategory);
+        });
+
+        // Set up dismiss buttons for alerts
+        document.querySelectorAll('.dismiss').forEach(button => {
+            button.addEventListener('click', function() {
+                this.parentNode.style.display = 'none';
+            });
+        });
+
+        // Add event listener to the footer add button
+        document.getElementById('footerAddBtn').addEventListener('click', function() {
+            document.getElementById('passwordForm').reset();
+            document.getElementById('passwordId').value = '';
+            document.getElementById('modalTitle').textContent = 'NEW SECURE RECORD';
+            document.getElementById('category').value = window.currentCategory !== 'all' ? window.currentCategory : '1';
+            document.getElementById('passwordModal').style.display = 'block';
+        });
+
+        // Add event listener to navbar links
+        document.getElementById('dashboardLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Already on dashboard, just update active state
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            this.classList.add('active');
+        });
+
+        document.getElementById('settingsLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Save current category before navigating
+            localStorage.setItem('currentCategory', window.currentCategory);
+            // Navigate to settings page
+            window.location.href = 'settings.html';
+        });
+
+        document.getElementById('terminateLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to terminate your session?')) {
+                // Show logout message
+                showErrorMessage('Session terminated. Goodbye.');
+
+                // Simulate logout after 2 seconds
+                setTimeout(() => {
+                    // In a real app, this would redirect to login page
+                    // For demo, just refresh
+                    localStorage.removeItem('currentCategory');
+                    window.location.reload();
+                }, 2000);
+            }
+        });
+
+        // Load records
+        loadSavedRecords();
+
+        // Terminal typing effect for other elements
+        // Add glitch effect randomly to elements
+        setInterval(() => {
+            const elements = document.querySelectorAll('.logo, .btn-primary');
+            const randomElement = elements[Math.floor(Math.random() * elements.length)];
+            randomElement.classList.add('glitch-effect');
+
+            setTimeout(() => {
+                randomElement.classList.remove('glitch-effect');
+            }, 300);
+        }, 3000);
+    });
+
+    // Function to load saved records from localStorage
+    function loadSavedRecords() {
+        const records = JSON.parse(localStorage.getItem('secureRecords') || '[]');
+
+        // Filter records based on current category
+        filterRecordsByCategory(window.currentCategory || 'all');
+    }
+
+    // Function to filter records by category
+    function filterRecordsByCategory(category) {
+        const records = JSON.parse(localStorage.getItem('secureRecords') || '[]');
+        let filteredRecords = records;
+
+        // Filter by category if not "all"
+        if (category !== 'all') {
+            filteredRecords = records.filter(record => record.category === category);
+        }
+
+        const table = document.querySelector('.password-list');
+        const tbody = table.querySelector('tbody');
+
+        // Clear table
+        tbody.innerHTML = '';
+
+        // Add "No records found" message if there are no records in this category
+        if (filteredRecords.length === 0) {
+            tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px;">
+                            <p>NO RECORDS FOUND IN DATABASE.</p>
+                        </td>
+                    </tr>
+                `;
+            return;
+        }
+
+        // Add each filtered record
+        filteredRecords.forEach(record => {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                    <td>${record.website}</td>
+                    <td>${record.username}</td>
+                    <td>••••••••••••</td>
+                    <td>${record.lastModified}</td>
+                    <td>
+                        <button class="btn-view hoverable" data-id="${record.id}">VIEW</button>
+                        <button class="btn-edit hoverable" data-id="${record.id}">EDIT</button>
+                        <button class="btn-delete hoverable" data-id="${record.id}">DELETE</button>
+                    </td>
+                `;
+
+            tbody.appendChild(newRow);
+
+            // Add event listeners to view button
+            newRow.querySelector('.btn-view').addEventListener('click', function() {
+                const recordId = this.getAttribute('data-id');
+                const record = records.find(r => r.id === recordId);
+                if (record) {
+                    alert(`ACCESS KEY: ${record.password}`);
+                }
+            });
+
+            // Add event listeners to edit button
+            newRow.querySelector('.btn-edit').addEventListener('click', function() {
+                const recordId = this.getAttribute('data-id');
+                const record = records.find(r => r.id === recordId);
+                if (record) {
+                    document.getElementById('passwordId').value = record.id;
+                    document.getElementById('website').value = record.website;
+                    document.getElementById('username').value = record.username;
+                    document.getElementById('passwordValue').value = record.password;
+                    document.getElementById('category').value = record.category;
+                    document.getElementById('notes').value = record.notes || '';
+                    document.getElementById('modalTitle').textContent = 'EDIT SECURE RECORD';
+                    document.getElementById('passwordModal').style.display = 'block';
+                }
+            });
+
+            // Add event listeners to delete button
+            newRow.querySelector('.btn-delete').addEventListener('click', function() {
+                const recordId = this.getAttribute('data-id');
+                if (confirm('Are you sure you want to delete this record?')) {
+                    // Remove from localStorage
+                    const updatedRecords = records.filter(r => r.id !== recordId);
+                    localStorage.setItem('secureRecords', JSON.stringify(updatedRecords));
+
+                    // Reload the filtered view
+                    filterRecordsByCategory(window.currentCategory || 'all');
+
+                    // Show success message
+                    showSuccessMessage('Record deleted successfully');
+                }
+            });
+        });
+    }
+</script>
+</body>
+</html>

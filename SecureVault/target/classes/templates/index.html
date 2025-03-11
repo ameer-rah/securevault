@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureVault - Password Manager</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<!-- Scanner line animation -->
+<div class="scanner"></div>
+
+<!-- Custom cursor -->
+<div class="custom-cursor"></div>
+
+<header>
+    <div class="container">
+        <nav>
+            <div class="logo hoverable" data-text="SecureVault">SECUREVAULT</div>
+            <div class="nav-links">
+                <a href="/" class="hoverable active">Home</a>
+                <a href="/login" class="hoverable">Login</a>
+                <a href="/register" class="hoverable">Register</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+        <section class="hero">
+            <h2 class="glitch" data-text="Securely Store And Manage Your Passwords">SECURELY STORE AND MANAGE YOUR PASSWORDS</h2>
+            <p>SecureVault uses advanced encryption to protect your most sensitive information. The digital fortress for your modern life.</p>
+            <div class="cta-buttons">
+                <a href="/register" class="btn btn-primary hoverable">GET STARTED</a>
+                <a href="/login" class="btn hoverable">LOGIN</a>
+            </div>
+
+            <div style="margin-top: 60px; text-align: left; width: 100%; max-width: 600px;">
+                <h3>AES-GCM ENCRYPTION</h3>
+                <p>Your passwords are protected with military-grade encryption algorithms. No compromises on security.</p>
+
+                <h3>PASSWORD GENERATOR</h3>
+                <p>Create strong, unique passwords with our built-in generator. Never reuse passwords again.</p>
+
+                <h3>ORGANIZATION</h3>
+                <p>Categorize and organize your passwords for easy access. Control your digital identity.</p>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 SecureVault. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    // Custom cursor
+    const cursor = document.querySelector('.custom-cursor');
+
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
+
+    // Glitch effect for elements with glitch class
+    const glitchElements = document.querySelectorAll('.glitch');
+    glitchElements.forEach(element => {
+        element.setAttribute('data-text', element.textContent);
+    });
+
+    // Hover effects
+    const hoverables = document.querySelectorAll('.hoverable');
+    hoverables.forEach(hoverable => {
+        hoverable.addEventListener('mouseenter', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+            cursor.style.borderColor = '#00ff00';
+        });
+
+        hoverable.addEventListener('mouseleave', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+            cursor.style.borderColor = '#00ff00';
+        });
+    });
+
+    // Random static effect
+    function createStaticParticle() {
+        const particle = document.createElement('div');
+        particle.classList.add('static-particle');
+
+        const size = Math.random() * 3 + 1;
+        const posX = Math.random() * window.innerWidth;
+        const posY = Math.random() * window.innerHeight;
+
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.left = posX + 'px';
+        particle.style.top = posY + 'px';
+        particle.style.position = 'fixed';
+        particle.style.backgroundColor = '#00ff00';
+        particle.style.opacity = '0.5';
+        particle.style.zIndex = '50';
+
+        document.body.appendChild(particle);
+
+        setTimeout(() => {
+            particle.remove();
+        }, 200);
+    }
+
+    setInterval(() => {
+        createStaticParticle();
+    }, 100);
+</script>
+</body>
+</html>
