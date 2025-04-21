@@ -14,7 +14,7 @@ An A$SAP themed password manager application
 - Dashboard: Main password management interface
 - Settings: User preferences and security options
 
-## Technologies
+## Languages
 - HTML5
 - CSS3 with animations
 - JavaScript (vanilla)
