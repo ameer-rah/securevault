@@ -20,7 +20,3 @@ An A$SAP themed password manager application
 - JavaScript (vanilla)
 - Local storage for data persistence
 
-## How to Use
-1. Clone this repository
-2. Open index.html in your browser
-3. Navigate through the application using the interface
