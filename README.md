@@ -11,5 +11,4 @@ An A$SAP themed password manager application
 - HTML5
 - CSS3 with animations
 - JavaScript (vanilla)
-- Local storage for data persistence
 
