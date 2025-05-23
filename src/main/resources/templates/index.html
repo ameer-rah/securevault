@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureVault - Password Manager</title>
+    <style>
+        /* Base styles */
+        :root {
+            --primary-color: #00ff00;
+            --secondary-color: #0a0a0a;
+            --text-color: #f0f0f0;
+            --accent-color: #ff00ff;
+            --danger-color: #ff3333;
+            --success-color: #00cc00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        body {
+            background-color: #121212;
+            color: var(--text-color);
+            position: relative;
+            overflow-x: hidden;
+            cursor: none !important;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Custom cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.15s ease, border-color 0.3s ease;
+            display: block;
+        }
+
+        /* Scanner effect */
+        .scanner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: linear-gradient(90deg,
+            rgba(0,255,0,0) 0%,
+            rgba(0,255,0,0.5) 50%,
+            rgba(0,255,0,0) 100%);
+            opacity: 0.8;
+            z-index: 1000;
+            box-shadow: 0 0 15px var(--primary-color);
+            animation: scan 3s linear infinite;
+            pointer-events: none;
+            width: 100%;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+            100% {
+                top: 100%;
+            }
+        }
+
+        /* Navigation */
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--primary-color);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* Hero section */
+        .hero {
+            padding: 100px 0 50px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .hero p {
+            max-width: 800px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        /* Features section */
+        .features {
+            padding: 50px 0;
+        }
+
+        .feature {
+            margin-bottom: 60px;
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+        }
+
+        .feature-icon {
+            background-color: rgba(0, 255, 0, 0.1);
+            border: 1px solid var(--primary-color);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            flex-shrink: 0;
+        }
+
+        .feature-content {
+            flex: 1;
+        }
+
+        .feature h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .feature p {
+            line-height: 1.6;
+        }
+
+        /* Button styles */
+        .btn {
+            padding: 12px 24px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: inline-block;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 15px var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: var(--primary-color);
+        }
+
+        /* Footer */
+        footer {
+            background-color: rgba(10, 10, 10, 0.8);
+            border-top: 1px solid var(--primary-color);
+            padding: 15px 0;
+            text-align: center;
+            font-size: 14px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            left: 0;
+        }
+
+        /* Static effect */
+        .static-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 50;
+            border-radius: 50%;
+            animation: fadeOut 0.2s linear;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 0.5; }
+            100% { opacity: 0; }
+        }
+
+        /* Hover effect */
+        .hoverable {
+            position: relative;
+            cursor: none;
+        }
+
+        .hoverable::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 255, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .hoverable:hover::before {
+            opacity: 1;
+        }
+
+        /* Digital glitch effect on hover */
+        .logo:hover, .btn-primary:hover {
+            animation: glitch 0.3s infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                text-shadow: 2px 0 0 rgba(255, 0, 255, 0.7), -2px 0 0 rgba(0, 255, 255, 0.7);
+            }
+            25% {
+                text-shadow: -2px 0 0 rgba(255, 0, 255, 0.7), 2px 0 0 rgba(0, 255, 255, 0.7);
+            }
+            50% {
+                text-shadow: 2px 4px 0 rgba(255, 0, 255, 0.7), -2px -4px 0 rgba(0, 255, 255, 0.7);
+            }
+            75% {
+                text-shadow: -2px -4px 0 rgba(255, 0, 255, 0.7), 2px 4px 0 rgba(0, 255, 255, 0.7);
+            }
+            100% {
+                text-shadow: 2px 0 0 rgba(255, 0, 255, 0.7), -2px 0 0 rgba(0, 255, 255, 0.7);
+            }
+        }
+
+        /* Terminal typing effect */
+        .terminal-text {
+            overflow: hidden;
+            border-right: 2px solid var(--primary-color);
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: 3px;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+            display: inline-block;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--primary-color) }
+        }
+    </style>
+</head>
+<body>
+<!-- Scanner line animation -->
+<div class="scanner"></div>
+
+<!-- Custom cursor -->
+<div class="custom-cursor"></div>
+
+<header>
+    <div class="container">
+        <nav>
+            <div class="logo hoverable">SECUREVAULT</div>
+            <div class="nav-links">
+                <a href="#" class="hoverable active" id="homeLink">HOME</a>
+                <a href="login.html" class="hoverable" id="loginLink">LOGIN</a>
+                <a href="register.html" class="hoverable" id="registerLink">REGISTER</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="container">
+            <h1 class="terminal-text">SECURELY STORE AND MANAGE YOUR PASSWORDS</h1>
+            <p>SecureVault uses advanced encryption to protect your most sensitive information. The digital fortress for your modern life.</p>
+            <div>
+                <a href="register.html" class="btn btn-primary hoverable" id="getStartedBtn">GET STARTED</a>
+                <a href="login.html" class="btn hoverable" id="loginBtn">LOGIN</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00ff00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <div class="feature-content">
+                    <h3>AES-GCM ENCRYPTION</h3>
+                    <p>Your passwords are protected with military-grade encryption algorithms. No compromise on security.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00ff00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 1 0 0-20z"></path>
+                        <path d="M12 6v6l4 2"></path>
+                    </svg>
+                </div>
+                <div class="feature-content">
+                    <h3>PASSWORD GENERATOR</h3>
+                    <p>Create strong, unique passwords with our built-in generator. Never reuse passwords again.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00ff00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </div>
+                <div class="feature-content">
+                    <h3>ORGANIZATION</h3>
+                    <p>Categorize and organize your passwords for easy access. Control your digital identity.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 SecureVault. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    // Custom cursor
+    const cursor = document.querySelector('.custom-cursor');
+    let isCursorVisible = true;
+
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+
+        // Make sure cursor is visible
+        if (!isCursorVisible) {
+            isCursorVisible = true;
+            cursor.style.display = 'block';
+        }
+    });
+
+    // Keep cursor visible when mouse enters window
+    document.addEventListener('mouseenter', () => {
+        isCursorVisible = true;
+        cursor.style.display = 'block';
+    });
+
+    // Ensure cursor remains visible even after page changes
+    setInterval(() => {
+        if (cursor.style.display !== 'block') {
+            cursor.style.display = 'block';
+        }
+    }, 100);
+
+    // Hover effects
+    const hoverables = document.querySelectorAll('.hoverable');
+    hoverables.forEach(hoverable => {
+        hoverable.addEventListener('mouseenter', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+            cursor.style.borderColor = '#00ff00';
+        });
+
+        hoverable.addEventListener('mouseleave', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+            cursor.style.borderColor = '#00ff00';
+        });
+    });
+
+    // Random static effect
+    function createStaticParticle() {
+        const particle = document.createElement('div');
+        particle.classList.add('static-particle');
+
+        const size = Math.random() * 3 + 1;
+        const posX = Math.random() * window.innerWidth;
+        const posY = Math.random() * window.innerHeight;
+
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.left = posX + 'px';
+        particle.style.top = posY + 'px';
+        particle.style.position = 'fixed';
+        particle.style.backgroundColor = '#00ff00';
+        particle.style.opacity = '0.5';
+        particle.style.zIndex = '50';
+
+        document.body.appendChild(particle);
+
+        setTimeout(() => {
+            particle.remove();
+        }, 200);
+    }
+
+    setInterval(() => {
+        createStaticParticle();
+    }, 100);
+
+    // Navigation buttons
+    document.addEventListener('DOMContentLoaded', function() {
+        // Buttons
+        document.getElementById('getStartedBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'register.html';
+        });
+
+        document.getElementById('loginBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'login.html';
+        });
+
+        // Nav links
+        document.getElementById('homeLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Already on home
+        });
+
+        document.getElementById('loginLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'login.html';
+        });
+
+        document.getElementById('registerLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'register.html';
+        });
+    });
+</script>
+</body>
+</html>
